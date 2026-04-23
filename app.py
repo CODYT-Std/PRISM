@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-VIDEO_FOLDER = "videos"
+VIDEO_FOLDER = "/opt/render/project/src/videos"
 
 
 def get_video_path(video_id):
@@ -31,7 +31,6 @@ def stream(video_id):
             data = f.read()
         return Response(data, mimetype="video/mp4")
 
-    # Parse Range
     bytes_range = range_header.replace("bytes=", "").split("-")
     start = int(bytes_range[0]) if bytes_range[0] else 0
     end = int(bytes_range[1]) if len(bytes_range) > 1 and bytes_range[1] else file_size - 1
@@ -56,5 +55,11 @@ def stream(video_id):
     return response
 
 
+@app.route("/")
+def home():
+    return "Streaming server online"
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
